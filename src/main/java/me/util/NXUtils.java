@@ -39,7 +39,7 @@ import nxopen.uf.UFObj;
 import nxopen.uf.UFObj.AskTypeAndSubtypeData;
 import nxopen.uf.UFView.AskVisibleObjectsData;
 
-public class XmjlUtils {
+public class NXUtils {
 	private static Session theSession = null;
 	private static UFSession ufSession = null;
 	private static Part workPart = null;
@@ -205,7 +205,7 @@ public class XmjlUtils {
 			partLoadStatus.dispose();
 			partLoadStatus = null;
 		} catch (Exception e) {
-			XmjlUtils.dialogError("此操作只能在工作空间！");
+			NXUtils.dialogError("此操作只能在工作空间！");
 		}
 	}
 
@@ -578,75 +578,6 @@ public class XmjlUtils {
 		return dimension;
 	}
 
-	public static void createLinearDimension(Point3d startPoint,
-			Point3d endPoint, Point3d valuePoint,View view,
-			DraftingCurve draftingCurve) throws Exception {
-		LinearDimensionBuilder builder;
-		try {
-			builder = workPart.dimensions().createLinearDimensionBuilder(null);
-
-			builder.origin().setInferRelativeToGeometry(false);
-			builder.origin()
-					.setAnchor(
-							nxopen.annotations.OriginBuilder.AlignmentPosition.TOP_CENTER);
-			builder.origin()
-					.plane()
-					.setPlaneMethod(
-							nxopen.annotations.PlaneBuilder.PlaneMethodType.XY_PLANE);
-
-			builder.measurement().setDirection(null);
-			builder.measurement().setDirectionView(null);
-
-			builder.style()
-					.dimensionStyle()
-					.setNarrowDisplayType(
-							nxopen.annotations.NarrowDisplayOption.NONE);
-
-//			Point3d startPoint = XmjlUtils.getCurveStartPoint(draftingCurve);
-//			Point3d startPoint2 = mapModelToDrawing(view, startPoint);// 转换后的坐标
-//			Point3d endPoint = XmjlUtils.getCurveEndPoint(draftingCurve);
-//			Point3d endPoint2 = mapModelToDrawing(view, endPoint);// 转换后的坐标
-//
-//			Point3d valuePoint = new Point3d(endPoint2.x - 30,
-//					(startPoint2.y + endPoint2.y) / 2, 0);
-			/*if ("TOP".equals(position)) {
-				valuePoint = new Point3d((startPoint2.x + endPoint2.x) / 2,
-						(startPoint2.y + endPoint2.y) / 2 + length, 0);
-			} else if ("BOTTOM".equals(position)) {
-				valuePoint = new Point3d((startPoint2.x + endPoint2.x) / 2,
-						(startPoint2.y + endPoint2.y) / 2 - length, 0);
-			} else if ("LEFT".equals(position)) {
-				valuePoint = new Point3d((startPoint2.x + endPoint2.x) / 2
-						- length, (startPoint2.y + endPoint2.y) / 2, 0);
-			} else if ("RIGHT".equals(position)) {
-				valuePoint = new Point3d((startPoint2.x + endPoint2.x) / 2
-						+ length, (startPoint2.y + endPoint2.y) / 2, 0);
-			} else {
-				valuePoint = null;
-			}
-*/
-			nxopen.Point3d secondPoint = new nxopen.Point3d(0.0, 0.0, 0.0);
-
-			builder.firstAssociativity().setValueWithSnap(
-					nxopen.InferSnapType.SnapType.END, draftingCurve, view,
-					startPoint, null, null, secondPoint);
-			builder.secondAssociativity().setValueWithSnap(
-					nxopen.InferSnapType.SnapType.START, draftingCurve, view,
-					endPoint, null, null, secondPoint);
-
-			// 直线的终点，即标注点
-			builder.origin().origin().setValue(null, null, valuePoint);
-
-			builder.style().lineArrowStyle()
-					.setLeaderOrientation(nxopen.annotations.LeaderSide.RIGHT);
-			builder.style().dimensionStyle().setTextCentered(true);
-			builder.commit();
-			builder.destroy();
-
-		} catch (RemoteException | NXException e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * 删除指定对象
@@ -666,7 +597,7 @@ public class XmjlUtils {
 			theSession.deleteUndoMark(markId, null);
 		} catch (RemoteException | NXException e) {
 			e.printStackTrace();
-			XmjlUtils.dialogError("删除失败！");
+			NXUtils.dialogError("删除失败！");
 		}
 		return state;
 	}
@@ -681,7 +612,7 @@ public class XmjlUtils {
 			theSession.displayManager().blankObjects(displayableObjects);
 		} catch (RemoteException | NXException e) {
 			e.printStackTrace();
-			XmjlUtils.dialogError("隐藏对象错误！");
+			NXUtils.dialogError("隐藏对象错误！");
 		}
 	}
 
@@ -756,7 +687,7 @@ public class XmjlUtils {
 					if (object.equals(Tag.NULL)) {
 						break;
 					} else {
-						list.add(XmjlUtils.getTaggedObjectByTag(object));
+						list.add(NXUtils.getTaggedObjectByTag(object));
 					}
 				} while (!object.equals(Tag.NULL));
 			} catch (RemoteException | NXException e) {
